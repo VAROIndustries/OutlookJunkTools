@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Security.Authentication;
+using System.Threading.Tasks;
 using System.Text;
 using OutlookJunkTools.Core;
 using Outlook = Microsoft.Office.Interop.Outlook;
@@ -37,32 +39,45 @@ namespace OutlookJunkTools.AddIn
             if (target == null || target.Scheme != Uri.UriSchemeHttps) return "Refused: one-click unsubscribe must use https.";
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(target);
-                request.Method = "POST";
-                request.ContentType = "application/x-www-form-urlencoded";
-                request.AllowAutoRedirect = false;
-                request.Timeout = 15000;
-                request.ReadWriteTimeout = 15000;
-                request.CookieContainer = null;
-                request.UseDefaultCredentials = false;
-                request.UserAgent = "OutlookJunkTools/0.2";
-                var body = Encoding.ASCII.GetBytes("List-Unsubscribe=One-Click");
-                request.ContentLength = body.Length;
-                using (var stream = request.GetRequestStream()) stream.Write(body, 0, body.Length);
-                using (var response = (HttpWebResponse)request.GetResponse())
+                return Post(target, SslProtocols.Tls12 | SslProtocols.Tls13);
+            }
+            catch (Exception ex) when (ex is NotSupportedException || ex is ArgumentException)
+            {
+                // TLS 1.3 is not available on this Windows build.
+                try { return Post(target, SslProtocols.Tls12); }
+                catch (Exception inner) { return Describe(inner); }
+            }
+            catch (Exception ex) { return Describe(ex); }
+        }
+
+        // Outlook hosts add-ins with .NET's legacy TLS defaults (SSL 3 / TLS 1.0), which modern servers refuse.
+        // The protocol is set on this one handler so no process-wide setting is changed for other add-ins.
+        private static string Post(Uri target, SslProtocols protocols)
+        {
+            using (var handler = new HttpClientHandler
+            {
+                SslProtocols = protocols,
+                AllowAutoRedirect = false,
+                UseCookies = false,
+                UseDefaultCredentials = false
+            })
+            using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) })
+            using (var content = new StringContent("List-Unsubscribe=One-Click", Encoding.ASCII, "application/x-www-form-urlencoded"))
+            {
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("OutlookJunkTools/0.2");
+                using (var response = client.PostAsync(target, content).GetAwaiter().GetResult())
                 {
                     int code = (int)response.StatusCode;
-                    return code >= 200 && code < 300 ? null : "The server answered " + code + " " + response.StatusDescription + ".";
+                    return code >= 200 && code < 300 ? null : "The server answered " + code + " " + response.ReasonPhrase + ".";
                 }
             }
-            catch (WebException ex)
-            {
-                var response = ex.Response as HttpWebResponse;
-                if (response != null)
-                    return "The server answered " + (int)response.StatusCode + " " + response.StatusDescription + ".";
-                return ex.Message;
-            }
-            catch (Exception ex) { return ex.Message; }
+        }
+
+        private static string Describe(Exception ex)
+        {
+            if (ex is TaskCanceledException) return "The server did not answer within 15 seconds.";
+            while (ex.InnerException != null) ex = ex.InnerException;
+            return ex.Message;
         }
 
         /// <summary>Sends the unsubscribe mail from the account that received the message. Returns null on success.</summary>
