@@ -3,9 +3,29 @@
     <tabs>
       <tab idMso="TabMail">
         <group id="ojtGroup" label="Junk Tools">
-          <button id="ojtPing" label="Ping" size="large" onAction="OnPing" />
+          <button id="ojtBlockJunk" label="Block + Junk" screentip="Block this sender and move the message to Junk" onAction="OnBlockAndJunk" />
+          <button id="ojtBlockSender" label="Block Sender" screentip="Send future mail from this address to Junk" onAction="OnBlockSender" />
+          <button id="ojtBlockDomain" label="Block Domain" screentip="Send future mail from this sender's whole domain to Junk" onAction="OnBlockDomain" />
+          <button id="ojtJunk" label="Junk" screentip="Move the selected message(s) to Junk" onAction="OnJunk" />
+          <button id="ojtUnsub" label="Unsubscribe" screentip="Use this message's unsubscribe option, after you confirm" onAction="OnUnsubscribe" />
+          <button id="ojtManage" label="Block List" screentip="View and edit blocked senders and domains" onAction="OnManageList" />
         </group>
       </tab>
     </tabs>
   </ribbon>
+  <contextMenus>
+    <contextMenu idMso="ContextMenuMailItem">
+      <menuSeparator id="ojtCtxSep" />
+      <button id="ojtCtxBlockJunk" label="Block Sender + Junk" onAction="OnBlockAndJunk" />
+      <button id="ojtCtxBlockSender" label="Block Sender" onAction="OnBlockSender" />
+      <button id="ojtCtxBlockDomain" label="Block Sender's Domain" onAction="OnBlockDomain" />
+      <button id="ojtCtxUnsub" label="Unsubscribe..." onAction="OnUnsubscribe" />
+    </contextMenu>
+    <contextMenu idMso="ContextMenuMultipleItems">
+      <menuSeparator id="ojtCtxMSep" />
+      <button id="ojtCtxMBlockJunk" label="Block Senders + Junk" onAction="OnBlockAndJunk" />
+      <button id="ojtCtxMBlockSender" label="Block Senders" onAction="OnBlockSender" />
+      <button id="ojtCtxMBlockDomain" label="Block Senders' Domains" onAction="OnBlockDomain" />
+    </contextMenu>
+  </contextMenus>
 </customUI>

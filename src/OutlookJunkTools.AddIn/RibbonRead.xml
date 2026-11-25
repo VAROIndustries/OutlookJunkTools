@@ -1,0 +1,15 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab idMso="TabReadMessage">
+        <group id="ojtReadGroup" label="Junk Tools">
+          <button id="ojtRBlockJunk" label="Block + Junk" onAction="OnBlockAndJunk" />
+          <button id="ojtRBlockSender" label="Block Sender" onAction="OnBlockSender" />
+          <button id="ojtRBlockDomain" label="Block Domain" onAction="OnBlockDomain" />
+          <button id="ojtRJunk" label="Junk" onAction="OnJunk" />
+          <button id="ojtRUnsub" label="Unsubscribe" onAction="OnUnsubscribe" />
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

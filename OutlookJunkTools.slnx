@@ -1,5 +1,9 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/OutlookJunkTools.AddIn/OutlookJunkTools.AddIn.csproj" />
+    <Project Path="src/OutlookJunkTools.Core/OutlookJunkTools.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OutlookJunkTools.Core.Tests/OutlookJunkTools.Core.Tests.csproj" />
   </Folder>
 </Solution>
