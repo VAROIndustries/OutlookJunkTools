@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Text;
@@ -62,13 +63,24 @@ namespace OutlookJunkTools.AddIn
                 UseDefaultCredentials = false
             })
             using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) })
-            using (var content = new StringContent("List-Unsubscribe=One-Click", Encoding.ASCII, "application/x-www-form-urlencoded"))
+            using (var content = new ByteArrayContent(Encoding.ASCII.GetBytes("List-Unsubscribe=One-Click")))
             {
+                // Exactly the content type RFC 8058 shows, with no charset parameter appended.
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("OutlookJunkTools/0.2");
                 using (var response = client.PostAsync(target, content).GetAwaiter().GetResult())
                 {
                     int code = (int)response.StatusCode;
-                    return code >= 200 && code < 300 ? null : "The server answered " + code + " " + response.ReasonPhrase + ".";
+                    if (code >= 200 && code < 300) return null;
+                    try
+                    {
+                        var text = response.Content.ReadAsStringAsync().GetAwaiter().GetResult() ?? "";
+                        text = System.Text.RegularExpressions.Regex.Replace(text, "\\s+", " ").Trim();
+                        Log.Info("One-click " + code + " from " + target.Host + ", response starts: " +
+                                 (text.Length > 300 ? text.Substring(0, 300) : text));
+                    }
+                    catch { /* diagnostic only */ }
+                    return "The server answered " + code + " " + response.ReasonPhrase + ".";
                 }
             }
         }
