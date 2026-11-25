@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OutlookJunkTools.AddIn/OutlookJunkTools.AddIn.csproj" />
+  </Folder>
+</Solution>

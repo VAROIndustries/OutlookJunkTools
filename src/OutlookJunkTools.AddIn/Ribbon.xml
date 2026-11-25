@@ -1,0 +1,11 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab idMso="TabMail">
+        <group id="ojtGroup" label="Junk Tools">
+          <button id="ojtPing" label="Ping" size="large" onAction="OnPing" />
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
