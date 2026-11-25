@@ -68,6 +68,8 @@ namespace OutlookJunkTools.AddIn
 
             Controls.AddRange(new Control[] { from, _method, targetLabel, _target, dkimLabel, _status, _proceed, _browser, _cancel });
             ShowOption();
+            // Start with focus on Cancel so the destination is not shown pre-selected.
+            ActiveControl = _cancel;
         }
 
         private UnsubscribeOption Current => _options[_index];

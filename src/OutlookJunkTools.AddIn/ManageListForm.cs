@@ -24,7 +24,7 @@ namespace OutlookJunkTools.AddIn
             _view.SetBounds(12, 12, 536, 320);
             _view.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             _view.View = View.Details; _view.FullRowSelect = true; _view.HideSelection = false;
-            _view.Columns.Add("Blocked", 300); _view.Columns.Add("Type", 90); _view.Columns.Add("Added", 120);
+            _view.Columns.Add("Blocked", 290); _view.Columns.Add("Type", 80); _view.Columns.Add("Added", 150);
 
             var remove = new Button { Text = "Remove selected", Left = 12, Top = 342, Width = 130, Height = 28,
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
